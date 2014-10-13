@@ -1,0 +1,26 @@
+<html>
+  <body>
+    <h1>one-childi</h1>
+    <script type="text/javascript" src="/dist/broker.js"></script>
+    <script type="text/javascript">
+
+
+        var count = 0;
+
+        function handleMessage(event){
+          console.log('event: ', event);
+        }
+
+        document.addEventListener('DOMContentLoaded', function(){
+          var broker = new msgr.Broker(window, 'parent');
+
+          broker.on('name', function(data, done){
+            console.log('name?');
+            var orig = count;
+            count++;
+            done(null, 'child-' + orig);
+          });
+        });
+    </script>
+  </body>
+</html>

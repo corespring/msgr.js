@@ -1,0 +1,28 @@
+<html>
+
+  <body>
+    <h1>one-root</h1>
+    <iframe id="child" src="child.html"></iframe>
+    <script type="text/javascript" src="/dist/broker.js"></script>
+    <script type="text/javascript">
+
+      function sendMessage(){
+        var iframe = document.querySelector('#child');
+        var channel = new msgr.Broker(window, iframe);
+        channel.send('name', {}, function(err, data){
+          console.log('>>', data);
+        });
+
+        channel.send('name', {}, function(err, data){
+          console.log('>>', data);
+        });
+      }
+
+      document.addEventListener('DOMContentLoaded', function(){
+          console.log('loaded');
+          //sendMessage();
+          setTimeout(sendMessage, 1000);
+      })
+    </script>
+  </body>
+</html>
