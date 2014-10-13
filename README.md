@@ -7,34 +7,13 @@ asynchronous 2 way messaging between a parent page and an iframe that uses `post
 * support simultaneous instances (lower prio)
 * lightweight
 
+
+## Run
+
+    python -m SimpleHTTPServer
+
+    go to: http://localhost:8000/test/two/root.html 
+
 ## Usage
 
-### Parent
-
-    var channel = new Msgr(iframe);
-
-    channel.send('x..');
-
-    channel.open();
-    channel.close();
-    channel.destroy();
-
-    msgr.send("#iframe1", "ping", { message: 'banana'}, function(err, result){
-
-      console.log('>', result.message); // > you said banana
-    });
-
-    msgr.on('hello', function(data, done){
-      done(null, 'hello back');
-    });
-
-
-### Child
-
-    msgr.on("ping", function(data, done){
-      done(null, { message: 'you said: ' + data.message})
-    });
-
-    msgr.send('parent', 'hello', {}, function(err, data){
-      console.log(data); // hello back
-    });
+...

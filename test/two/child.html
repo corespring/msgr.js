@@ -1,7 +1,7 @@
 <html>
   <body>
     <h1>one-childi</h1>
-    <script type="text/javascript" src="/dist/broker.js"></script>
+    <script type="text/javascript" src="/dist/b2.js"></script>
     <script type="text/javascript">
 
 
@@ -12,10 +12,10 @@
         }
 
         document.addEventListener('DOMContentLoaded', function(){
-          var broker = new msgr.Broker(window, 'parent');
+          var receiver = new msgr.Receiver(window, 'parent');
 
-          broker.on('name', function(data, done){
-            console.log('name?');
+          receiver.on('name', function(data, done){
+            console.log('name - logic running...');
             var orig = count;
             count++;
             done(null, 'child-' + orig);
