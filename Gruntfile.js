@@ -1,5 +1,13 @@
 module.exports = function(grunt) {
 
+
+  function startExpress() {
+    var express = require('express');
+    var app = express();
+    app.use(express.static(__dirname));
+    app.listen(5000);
+  }
+
   grunt.initConfig({
     pkg: grunt.file.readJSON('package.json'),
     jshint: {
@@ -34,6 +42,7 @@ module.exports = function(grunt) {
     },
     webdriver: {
       options: {
+        baseUrl: 'http://localhost:5000',
         desiredCapabilities: {
           browserName: 'chrome'
         }
@@ -49,5 +58,7 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-contrib-copy');
   grunt.loadNpmTasks('grunt-contrib-jshint');
   grunt.loadNpmTasks('grunt-contrib-uglify');
+  grunt.registerTask('start-express', startExpress);
+  grunt.registerTask('regression', ['start-express', 'webdriver']);
   grunt.registerTask('default', ['jshint', 'uglify', 'copy']);
 };
