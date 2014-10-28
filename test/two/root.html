@@ -4,6 +4,7 @@
   <body>
     <h1>one-root</h1>
     <iframe id="child" src="child.html"></iframe>
+    <div id="output"></div>
     <!-- use jquery so we can test ie8 -->
     <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
     <script type="text/javascript" src="/bower_components/console-polyfill/index.js"></script>
@@ -12,23 +13,22 @@
 
       function sendMessage(){
         var iframe = $('#child')[0];
-        var dispatcher = new msgr.Dispatcher(window, iframe);
+        var dispatcher = new msgr.Dispatcher(window, iframe, {disableLogging: true});
         dispatcher.send('name', {}, function(err, data){
-          console.log('>>', data);
+          $('#output').append(data);
         });
 
         dispatcher.send('name', {}, function(err, data){
-          console.log('>>', data);
+          $('#output').append(data);
         });
 
         dispatcher.send('name', {}, function(err, data){
-          console.log('>>', data);
+          $('#output').append(data);
         });
       }
 
       $(document).ready(function(){
-          console.log('loaded');
-          sendMessage();
+        sendMessage();
       });
 
     </script>

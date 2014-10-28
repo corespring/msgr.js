@@ -31,9 +31,20 @@ module.exports = function(grunt) {
         tasks: ['default']
 
       }
+    },
+    webdriver: {
+      options: {
+        desiredCapabilities: {
+          browserName: 'chrome'
+        }
+      },
+      form: {
+        tests: ['test/spec/**/*.js']
+      }
     }
   });
 
+  grunt.loadNpmTasks('grunt-webdriver');
   grunt.loadNpmTasks('grunt-contrib-watch');
   grunt.loadNpmTasks('grunt-contrib-copy');
   grunt.loadNpmTasks('grunt-contrib-jshint');

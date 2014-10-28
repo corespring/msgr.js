@@ -24,3 +24,6 @@ asynchronous 2 way messaging between a parent page and an iframe that uses `post
 * ie8 support
 * queue messages until the iframe is ready
 * build setup
+
+
+* adding and removing iframes - no increase in listeners

@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+
+  <body>
+    <h1>one-root</h1>
+    <!-- use jquery so we can test ie8 -->
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+    <script type="text/javascript" src="/bower_components/console-polyfill/index.js"></script>
+    <script type="text/javascript" src="/dist/msgr.js"></script>
+    <script type="text/javascript">
+    $(document).ready(function(){
+
+      var dispatcherOne;
+
+      $("#add-1").click(function(){
+
+        $('body').append('<iframe id="iframe-1" src="child.html"></iframe>');
+        var iframe = $('#iframe-1')[0];
+        dispatcherOne = new msgr.Dispatcher(window, iframe);
+        dispatcherOne.send('name', {}, function(err, data){
+          console.log('>>', data);
+        });
+      });
+
+      $('#add-2').click(function(){
+        $('#iframe-1').remove(); 
+        dispatcherOne.remove();
+        $('body').append('<iframe id="iframe-2" src="child.html"></iframe>');
+        var iframe = $('#iframe-2')[0];
+        var dispatcher = new msgr.Dispatcher(window, iframe);
+        dispatcher.send('name', {}, function(err, data){
+          console.log('>>', data);
+        });
+      })
+
+    });
+    </script>
+
+
+    <button id="add-1">Add 1</button>
+    <button id="add-2">Add 2</button>
+    <hr/>
+  </body>
+</html>
