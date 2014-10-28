@@ -1,21 +1,19 @@
+<!DOCTYPE html>
 <html>
   <body>
-    <h1>one-childi</h1>
+    <h1>one-child</h1>
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+    <script type="text/javascript" src="/bower_components/console-polyfill/index.js"></script>
     <script type="text/javascript" src="/dist/msgr.js"></script>
     <script type="text/javascript">
 
 
         var count = 0;
 
-        function handleMessage(event){
-          console.log('event: ', event);
-        }
-
-        document.addEventListener('DOMContentLoaded', function(){
-          var receiver = new msgr.Receiver(window, 'parent');
+        $(document).ready(function(){
+          var receiver = new msgr.Receiver(window, window.parent);
 
           receiver.on('name', function(data, done){
-            console.log('name - logic running...');
             var orig = count;
             count++;
             done(null, 'child-' + orig);
