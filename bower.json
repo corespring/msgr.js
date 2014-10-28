@@ -1,5 +1,5 @@
 {
-  "name" "msgr.js",
-  "version" : "0.1.0",
-  "description" : "lightweight asynch messaging between page and iframe using postMessage"
+    "description": "lightweight asynch messaging between page and iframe using postMessage",
+    "name": "msgr.js",
+    "version": "0.1.0"
 }
