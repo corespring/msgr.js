@@ -10,13 +10,24 @@
     <script type="text/javascript">
     $(document).ready(function(){
 
+      function CustomLogger(){
+        var handleLog = function(){
+          var args = Array.prototype.slice.call(arguments); 
+          $("#log-output").append(args.join(' ') + '<br/>');
+        }
+        this.log = handleLog;
+        this.warn = handleLog;
+        this.debug = handleLog;
+        this.error = handleLog;
+      }
+
       var dispatcherOne;
 
       $("#add-1").click(function(){
 
         $('body').append('<iframe id="iframe-1" src="child.html"></iframe>');
         var iframe = $('#iframe-1')[0];
-        dispatcherOne = new msgr.Dispatcher(window, iframe);
+        dispatcherOne = new msgr.Dispatcher(window, iframe, {logger: new CustomLogger() });
         dispatcherOne.send('name', {}, function(err, data){
           console.log('>>', data);
         });
@@ -27,7 +38,7 @@
         dispatcherOne.remove();
         $('body').append('<iframe id="iframe-2" src="child.html"></iframe>');
         var iframe = $('#iframe-2')[0];
-        var dispatcher = new msgr.Dispatcher(window, iframe);
+        var dispatcher = new msgr.Dispatcher(window, iframe, {logger : new CustomLogger()});
         dispatcher.send('name', {}, function(err, data){
           console.log('>>', data);
         });
@@ -36,9 +47,12 @@
     });
     </script>
 
-
+    <h1>Add, remove then add again</h1>
+    <p>This demonstrates that the message handler is removed as long as `remove` is called</p>
     <button id="add-1">Add 1</button>
     <button id="add-2">Add 2</button>
+    <h5>Log output</h5>
+    <div id="log-output"></div>
     <hr/>
   </body>
 </html>
