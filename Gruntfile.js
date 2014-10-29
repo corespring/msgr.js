@@ -50,6 +50,18 @@ module.exports = function(grunt) {
       form: {
         tests: ['test/spec/**/*.js']
       }
+    },
+    jasmine: {
+      main: {
+        src: 'src/**/*.js',
+        options: {
+          keepRunner: true,
+          specs: 'test/unit/**/*spec.js',
+          vendor: [
+            "lib/*.js"
+          ]
+        }
+      }
     }
   });
 
@@ -58,7 +70,10 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-contrib-copy');
   grunt.loadNpmTasks('grunt-contrib-jshint');
   grunt.loadNpmTasks('grunt-contrib-uglify');
+  grunt.loadNpmTasks('grunt-contrib-jasmine');
+
   grunt.registerTask('start-express', startExpress);
+  grunt.registerTask('test', ['jshint', 'jasmine']);
   grunt.registerTask('regression', ['start-express', 'webdriver']);
   grunt.registerTask('default', ['jshint', 'uglify', 'copy']);
 };
