@@ -29,3 +29,22 @@ We have some ui tests
 ## Usage
 
 
+There are 2 classes that you can use: `msgr.Dispatcher` and `msgr.Receiver`.
+
+When used together across 2 documents (a root and an iframe), they simplify making requests from one to the other.
+
+The dispatcher is used when you want to initiate a request and add a callback for it's response. It saves you from having to manage the postMessage response handling.
+
+    var dispatcher = new msgr.Dispatcher(window, iframe);
+
+    dispatcher.send('whatTimeIsIt', function(err, result){
+      console.log('the time is', result);
+    });
+
+    //Then in the iframe you add: 
+
+    var receiver = new msgr.Receiver(window, window.parent);
+
+    receiver.on('whatTimeIsIt', function(done){
+      done(null, new Date().toString());
+    });
