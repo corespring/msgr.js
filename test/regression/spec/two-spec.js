@@ -7,7 +7,7 @@ describe('two', function(){
       .waitForText('#output', 1500)
       .getText('#output', function(err, html) {
         assert.equal(html,'child-0child-1child-2');
-      }).call(done)
+      }).call(done);
   });
 
 });

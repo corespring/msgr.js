@@ -48,3 +48,8 @@ The dispatcher is used when you want to initiate a request and add a callback fo
     receiver.on('whatTimeIsIt', function(done){
       done(null, new Date().toString());
     });
+
+### TODO
+
+* callback is optional
+* can pass in data
