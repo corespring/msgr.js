@@ -50,4 +50,19 @@ describe('dispatcher', function(){
     source.ready(target.contentWindow);
     expect(received.data.name).toEqual('Granny Smith');
   });
+  
+  it('should allow you to just fire and forget w/ no data', function(){
+    //....
+    var received;
+    var source = new MockWindow('source');
+    var handleMessage = function(msg){
+      received = JSON.parse(msg);
+    };  
+    var target = new MockWindow('target', handleMessage);
+    var d = new msgr.Dispatcher(source, target, {enableLogging: false});
+    d.send('apple');
+    //Need to notify the dispatcher that we are ready...
+    source.ready(target.contentWindow);
+    expect(received.messageType).toEqual('apple');
+  });
 });
