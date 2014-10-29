@@ -1,11 +1,10 @@
 var assert = require('assert');
 
-
 describe('add-remove-add', function(){
 
   it('add-then-remove-then-add', function(done){
     browser
-      .url('http://localhost:5000/test/samples/add-remove-add/root.html')
+      .url('http://localhost:5000/test/regression/samples/add-remove-add/root.html')
       .click('#add-1')
       .pause(400)
       .click('#add-2')
