@@ -20,6 +20,9 @@ asynchronous 2 way messaging between a parent page and an iframe that uses `post
     http://localhost:8000/test/samples/add-remove-add/root.html
 
 ## Tests
+We have some unit tests
+
+    grunt test
 
 We have some ui tests 
 
