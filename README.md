@@ -24,9 +24,20 @@ We have some unit tests
 
     grunt test
 
-We have some ui tests 
+We have some local ui tests :
 
-    grunt regression
+    grunt regression #will run the local tests
+
+And the same tests running on sauce labs:
+
+    grunt webdriver:sauceLabs #will run the ie8 tests on saucelabs
+
+You'll need the following env vars set: 
+* SAUCE_USERNAME
+* SAUCE_PASSWORD
+* MSGR_BASE_URL
+
+You'll also need to deploy the files somewhere sauce labs can access them, at the moment we have corespring-msgr.herokuapp.com set up ping ed for access.
 
 
 ## Usage

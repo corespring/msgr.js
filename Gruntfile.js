@@ -46,7 +46,7 @@ module.exports = function(grunt) {
           browserName: 'chrome'
         }
       },
-      form: {
+      local: {
         tests: ['test/regression/spec/**/*.js']
       },
       sauceLabs: {
@@ -88,6 +88,6 @@ module.exports = function(grunt) {
 
   grunt.registerTask('start-express', startExpress);
   grunt.registerTask('test', ['jshint', 'jasmine']);
-  grunt.registerTask('regression', ['start-express', 'webdriver']);
+  grunt.registerTask('regression', ['start-express', 'webdriver:local']);
   grunt.registerTask('default', ['jshint', 'uglify', 'copy']);
 };
