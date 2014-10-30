@@ -162,6 +162,17 @@
     
     messageListener.add(handlePostMessage.bind(this));
 
+    /**
+     * Send a message to the target.
+     * @param name - the name of the message
+     * @param data (optional) - a serializeable object to send with the message
+     * @param callback (optional) - a callback function of the form:
+     *     function(err, result){ 
+     *        //... 
+     *     }
+     * Note: if you don't have any data to send you can supply the callback
+     * as the 2nd argument.
+     */
     this.send = function() {
 
       var args = Array.prototype.slice.call(arguments, 0);
@@ -198,6 +209,9 @@
       }
     };
 
+    /**
+     * Remove the dispatcher - it'll stop listening for messages on the source window.
+     */
     this.remove = function(){
       messageListener.remove();
     };
