@@ -1,5 +1,3 @@
-//dispatcher-spec.js
-
 describe('dispatcher', function(){
 
   function MockWindow(name, targetMessageHandler){
@@ -37,32 +35,29 @@ describe('dispatcher', function(){
     expect(d).not.toBe(undefined);
   });
 
+  function assertSend(t, d, cb){
+    var received;
+    var source = new MockWindow('source');
+    var handleMessage = function(msg){
+      received = JSON.parse(msg);
+    };  
+    var target = new MockWindow('target', handleMessage);
+    var dispatcher = new msgr.Dispatcher(source, target, {enableLogging: false});
+    dispatcher.send(t, d);
+    //Need to notify the dispatcher that we are ready...
+    source.ready(target.contentWindow);
+    cb(received);
+  }  
+
   it('should allow you to add data to send', function(){
-    var received;
-    var source = new MockWindow('source');
-    var handleMessage = function(msg){
-      received = JSON.parse(msg);
-    };  
-    var target = new MockWindow('target', handleMessage);
-    var d = new msgr.Dispatcher(source, target, {enableLogging: false});
-    d.send('apple', {name: 'Granny Smith'});
-    //Need to notify the dispatcher that we are ready...
-    source.ready(target.contentWindow);
-    expect(received.data.name).toEqual('Granny Smith');
+    assertSend('apple', {name: 'Granny Smith'}, function(received){
+      expect(received.data.name).toEqual('Granny Smith');
+    });
   });
-  
+
   it('should allow you to just fire and forget w/ no data', function(){
-    //....
-    var received;
-    var source = new MockWindow('source');
-    var handleMessage = function(msg){
-      received = JSON.parse(msg);
-    };  
-    var target = new MockWindow('target', handleMessage);
-    var d = new msgr.Dispatcher(source, target, {enableLogging: false});
-    d.send('apple');
-    //Need to notify the dispatcher that we are ready...
-    source.ready(target.contentWindow);
-    expect(received.messageType).toEqual('apple');
+    assertSend('apple', null, function(received){
+      expect(received.messageType).toEqual('apple');
+    });
   });
 });
