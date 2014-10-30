@@ -1,14 +1,15 @@
+//one-spec.js
 var assert = require('assert');
 
-describe('two', function(){
+describe('one', function(){
 
   var baseUrl = process.env.MSGR_BASE_URL || 'http://localhost:5000';
-  it('multiple-calls-get-multiple-results', function(done){
+  it('data is passed on to receiver', function(done){
      browser 
-      .url( baseUrl + '/test/regression/samples/two/root.html')
+      .url( baseUrl + '/test/regression/samples/one/root.html')
       .waitForText('#output', 1500)
       .getText('#output', function(err, html) {
-        assert.equal(html,'child-0, child-1, child-2');
+        assert.equal(html,'hello ed, hello evan, hello ervin');
       }).call(done);
   });
 

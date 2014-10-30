@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+  <body>
+    <h1>one-child</h1>
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+    <script type="text/javascript" src="/bower_components/console-polyfill/index.js"></script>
+    <script type="text/javascript" src="/dist/msgr.js"></script>
+    <script type="text/javascript">
+        $(document).ready(function(){
+          var receiver = new msgr.Receiver(window, window.parent, {enableLogging: true});
+          receiver.on('greeting', function(data, done){
+            console.log('got: ', data);
+            done(null, 'hello ' + data.name);
+          });
+        });
+    </script>
+  </body>
+</html>

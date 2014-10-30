@@ -4,12 +4,11 @@ describe('dispatcher', function(){
 
     var cbs = {};
     this.name = name;
-    this.contentWindow = {
-      postMessage: function(msg, origin){
-        console.debug(name, 'handle message...', msg);
-        if(targetMessageHandler){
-          targetMessageHandler(msg);
-        }
+    
+    this.postMessage = function(msg, origin){
+      console.debug(name, 'handle message...', msg);
+      if(targetMessageHandler){
+        targetMessageHandler(msg);
       }
     };
 
@@ -45,7 +44,7 @@ describe('dispatcher', function(){
     var dispatcher = new msgr.Dispatcher(source, target, {enableLogging: false});
     dispatcher.send(t, d);
     //Need to notify the dispatcher that we are ready...
-    source.ready(target.contentWindow);
+    source.ready(target);
     cb(received);
   }  
 

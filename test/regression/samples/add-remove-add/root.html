@@ -27,7 +27,7 @@
 
         $('body').append('<iframe id="iframe-1" src="child.html"></iframe>');
         var iframe = $('#iframe-1')[0];
-        dispatcherOne = new msgr.Dispatcher(window, iframe, {logger: new CustomLogger() });
+        dispatcherOne = new msgr.Dispatcher(window, iframe.contentWindow, {logger: new CustomLogger() });
         dispatcherOne.send('name', {}, function(err, data){
           console.log('>>', data);
         });
@@ -38,7 +38,7 @@
         dispatcherOne.remove();
         $('body').append('<iframe id="iframe-2" src="child.html"></iframe>');
         var iframe = $('#iframe-2')[0];
-        var dispatcher = new msgr.Dispatcher(window, iframe, {logger : new CustomLogger()});
+        var dispatcher = new msgr.Dispatcher(window, iframe.contentWindow, {logger : new CustomLogger()});
         dispatcher.send('name', {}, function(err, data){
           console.log('>>', data);
         });

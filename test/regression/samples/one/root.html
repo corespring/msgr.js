@@ -14,15 +14,15 @@
       function sendMessage(){
         var iframe = $('#child')[0].contentWindow;
         var dispatcher = new msgr.Dispatcher(window, iframe, {disableLogging: true});
-        dispatcher.send('name', {}, function(err, data){
+        dispatcher.send('greeting', {name: 'ed'}, function(err, data){
           $('#output').append(data + ", ");
         });
 
-        dispatcher.send('name', {}, function(err, data){
+        dispatcher.send('greeting', {name: 'evan'}, function(err, data){
           $('#output').append(data + ", ");
         });
 
-        dispatcher.send('name', {}, function(err, data){
+        dispatcher.send('greeting', {name: 'ervin'}, function(err, data){
           $('#output').append(data);
         });
       }
