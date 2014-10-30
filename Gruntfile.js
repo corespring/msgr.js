@@ -49,6 +49,21 @@ module.exports = function(grunt) {
       },
       form: {
         tests: ['test/spec/**/*.js']
+      },
+      sauceLabs: {
+        options: {
+        host: 'ondemand.saucelabs.com',
+        port: 80,
+        user: SAUCE_USERNAME,
+        key: SAUCE_ACCESS_KEY,
+        baseUrl: 'http://corespring-msgr.herokuapp.com'
+        desiredCapabilities: {
+            browserName: 'ie',
+            version: '8',
+            platform: 'XP',
+            'tunnel-identifier': 'my-tunnel'
+        }
+    },
       }
     },
     jasmine: {

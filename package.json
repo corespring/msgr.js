@@ -1,5 +1,6 @@
 {
   "description": "Post Message utility",
+  "dependencies" : {},
   "devDependencies": {
     "assert": "^1.1.2",
     "express": "^4.10.0",
