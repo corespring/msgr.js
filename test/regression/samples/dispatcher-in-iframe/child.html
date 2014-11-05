@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+  <body>
+    <p>The child has a dispatcher that sends the event 'ping' to the parent.</p>
+    <p>We expect it to get the result 'pong' back</p>
+    <div> result: <span id="output"></span></div>
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+    <script type="text/javascript" src="/bower_components/console-polyfill/index.js"></script>
+    <script type="text/javascript" src="/dist/msgr.js"></script>
+    <script type="text/javascript">
+        $(document).ready(function(){
+          var dispatcher = new msgr.Dispatcher(window, window.parent, {
+            enableLogging: false 
+          });
+          dispatcher.send('ping', function(err, result){
+            $('#output').append(result);
+          });
+        });
+    </script>
+  </body>
+</html>
