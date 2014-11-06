@@ -47,7 +47,7 @@ module.exports = function(grunt) {
         }
       },
       local: {
-        tests: ['test/regression/spec/**/*.js']
+        tests: ['test/regression/spec/**/channel*-spec.js']
       },
       sauceLabs: {
         tests: ['test/regression/spec/**/*.js'],

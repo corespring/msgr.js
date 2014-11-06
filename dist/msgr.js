@@ -344,9 +344,26 @@
     };
   }
 
+  function Channel(source,target, options){
+    var dispatcher = new Dispatcher(source, target, options);
+    var receiver = new Receiver(source, target, options);
+
+    this.send = function(){
+      dispatcher.send.apply(dispatcher, Array.prototype.slice.call(arguments,0));
+    };
+
+    this.on = function(){
+      receiver.on.apply(receiver, Array.prototype.slice.call(arguments,0));
+    };
+
+    this.remove = function(){
+      dispatcher.remove();
+    };
+  }
 
   root.msgr = root.msgr || {};
   root.msgr.Receiver = Receiver;
   root.msgr.Dispatcher = Dispatcher;
+  root.msgr.Channel = Channel;
 
 })(this);

@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+  <body>
+    <p>The child is also a channel so can send and receive too.</p>
+    <div> result from root: <span id="output"></span></div>
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+    <script type="text/javascript" src="/bower_components/console-polyfill/index.js"></script>
+    <script type="text/javascript" src="/dist/msgr.js"></script>
+    <script type="text/javascript">
+        $(document).ready(function(){
+          var channel = new msgr.Channel(window, window.parent, {
+            enableLogging:  false 
+          });
+
+          channel.send('msg-from-iframe', function(err, result){
+            $('#output').append(result);
+          });
+
+          channel.on('msg-from-root', function(data, done){
+            done(null, 'hi root, i\'m an iframe');
+          });
+
+        });
+    </script>
+  </body>
+</html>

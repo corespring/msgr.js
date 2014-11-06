@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+
+  <body>
+    <h1>dispatcher in iframe</h1>
+    <p>The receiver is on the root and will handle 'ping'</p>
+    <div id="output"></div>
+    <!-- use jquery so we can test ie8 -->
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+    <script type="text/javascript" src="/bower_components/console-polyfill/index.js"></script>
+    <script type="text/javascript" src="/dist/msgr.js"></script>
+    <script type="text/javascript">
+
+      $(document).ready(function(){
+
+        $('body').append('<iframe id="child" src="child.html"></iframe>');
+        var iframe = $('#child')[0].contentWindow;
+        var receiver = new msgr.Receiver(window, iframe, {enableLogging: false});
+
+        receiver.on('ping', function(data, done){
+          done(null, 'pong');
+        });
+      });
+
+    </script>
+  </body>
+</html>

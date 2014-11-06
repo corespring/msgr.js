@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+
+  <body>
+    <h1>Channel test</h1>
+    <p>A Channel is a Dispatcher + Receiver in one, so can send and receive messages.</p>
+    <iframe id="child" src="child.html" width="600px" height="600px"></iframe>
+    <div> result from child: <span id="output"></span></div>
+    <!-- use jquery so we can test ie8 -->
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+    <script type="text/javascript" src="/bower_components/console-polyfill/index.js"></script>
+    <script type="text/javascript" src="/dist/msgr.js"></script>
+    <script type="text/javascript">
+
+      $(document).ready(function(){
+        var iframe = $('#child')[0].contentWindow;
+        var channel = new msgr.Channel(window, iframe, {enableLogging: false});
+
+        channel.on('msg-from-iframe', function(data, done){
+          done(null, 'hi iframe, i\'m root');
+        });
+
+        channel.send('msg-from-root', function(err, result){
+          $('#output').append(result);
+        });
+      });
+
+    </script>
+  </body>
+</html>
