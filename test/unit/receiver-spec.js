@@ -14,6 +14,15 @@ describe('receiver', function(){
       if(targetMessageHandler){
         targetMessageHandler(msg);
       }
+
+      if(cbs.message){
+
+        var event = {
+          source: this,
+          data: msg
+        };
+        cbs.message(event);
+      }
     };
 
     this.addEventListener = function(name, cb){
@@ -38,29 +47,52 @@ describe('receiver', function(){
     expect(d).not.toBe(undefined);
   });
 
-  // function assertSend(t, d, cb){
-  //   var received;
-  //   var source = new MockWindow('source');
-  //   var handleMessage = function(msg){
-  //     received = JSON.parse(msg);
-  //   };
-  //   var target = new MockWindow('target', handleMessage);
-  //   var dispatcher = new msgr.Dispatcher(source, target, {enableLogging: false});
-  //   dispatcher.send(t, d);
-  //   //Need to notify the dispatcher that we are ready...
-  //   source.ready(target);
-  //   cb(received);
-  // }
-  //
-  // it('should allow you to add data to send', function(){
-  //   assertSend('apple', {name: 'Granny Smith'}, function(received){
-  //     expect(received.data.name).toEqual('Granny Smith');
-  //   });
-  // });
-  //
-  // it('should allow you to just fire and forget w/ no data', function(){
-  //   assertSend('apple', null, function(received){
-  //     expect(received.messageType).toEqual('apple');
-  //   });
-  // });
+  function assertReceive(listenerType, messageHandler, assertResult, messageType){
+
+    messageType = messageType || listenerType;
+
+    messageHandler = messageHandler || function(data, done){
+      done(null, messageType + '-received');
+    };
+
+    assertResult = assertResult || function(r){
+      expect(r.result).toBe(messageType + '-received');
+    };
+
+    var source = new MockWindow('source');
+
+    var resultFromReceiver = null;
+
+    var target = new MockWindow('target', function(msg){
+      resultFromReceiver = JSON.parse(msg);
+    });
+    var d = new msgr.Receiver(source, target);
+
+    d.on(listenerType, messageHandler );
+
+    var request = {
+      messageType: messageType,
+      mode: 'request',
+      uid: 1
+    };
+    source.postMessage(JSON.stringify(request));
+    assertResult(resultFromReceiver);
+  }
+
+  it('on - specific', function(){
+    assertReceive('msg');
+  });
+
+  it('on - *', function(){
+    assertReceive('*',
+      function(name, data, done){
+        done(null, 'got-' + name);
+      },
+      function(r){
+        expect(r.result).toBe('got-banana');
+      },
+      'banana'
+    );
+  });
+
 });
