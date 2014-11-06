@@ -9,7 +9,7 @@
         $(document).ready(function(){
           var receiver = new msgr.Receiver(window, window.parent, {enableLogging: true});
           receiver.on('greeting', function(data, done){
-            console.log('got: ', data);
+            //console.log('got: ', data);
             done(null, 'hello ' + data.name);
           });
         });

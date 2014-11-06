@@ -12,7 +12,7 @@
 
       function CustomLogger(){
         var handleLog = function(){
-          var args = Array.prototype.slice.call(arguments); 
+          var args = Array.prototype.slice.call(arguments);
           $("#log-output").append(args.join(' ') + '<br/>');
         }
         this.log = handleLog;
@@ -29,18 +29,18 @@
         var iframe = $('#iframe-1')[0];
         dispatcherOne = new msgr.Dispatcher(window, iframe.contentWindow, {logger: new CustomLogger() });
         dispatcherOne.send('name', {}, function(err, data){
-          console.log('>>', data);
+          //console.log('>>', data);
         });
       });
 
       $('#add-2').click(function(){
-        $('#iframe-1').remove(); 
+        $('#iframe-1').remove();
         dispatcherOne.remove();
         $('body').append('<iframe id="iframe-2" src="child.html"></iframe>');
         var iframe = $('#iframe-2')[0];
         var dispatcher = new msgr.Dispatcher(window, iframe.contentWindow, {logger : new CustomLogger()});
         dispatcher.send('name', {}, function(err, data){
-          console.log('>>', data);
+          //console.log('>>', data);
         });
       })
 

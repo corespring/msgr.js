@@ -1,10 +1,10 @@
 var assert = require('assert');
 
-describe('dispatcher in the child page', function(){
+describe('channels', function(){
 
   var baseUrl = process.env.MSGR_BASE_URL || 'http://localhost:5000';
 
-  it('dispatcher in the child page', function(done){
+  it('channels', function(done){
     browser
       .url(baseUrl + '/test/regression/samples/channel/root.html')
       .pause(400)
@@ -12,7 +12,7 @@ describe('dispatcher in the child page', function(){
       .getText('#output', function(err, html){
         assert.equal('hi root, i\'m an iframe', html);
       })
-      .frame("child", function(){ console.log(arguments);})
+      .frame("child")
       .waitForText('#output', 1000)
       .getText('#output', function(err, html) {
         assert.equal('hi iframe, i\'m root', html);
