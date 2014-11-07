@@ -90,6 +90,7 @@ describe('receiver', function(){
       },
       function(r){
         expect(r.result).toBe('got-banana');
+        expect(r.messageType).toBe('banana');
       },
       'banana'
     );
