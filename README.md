@@ -1,6 +1,29 @@
 # msgr.js
 
-asynchronous 2 way messaging between a parent page and an iframe that uses `postMessage`
+An asynchronous 2 way messaging api for communication between web documents built with `postMessage`.
+
+- root.html
+
+    var channel = msgr.Channel(window, iframe);
+    channel.on('msg-from-iframe', function(data, done){
+        //.. do stuff
+    });
+
+    channel.send('msg-to-iframe', {name: 'Ed'}, function(err, result){
+        //.. do stuff
+    });
+
+
+- child.html
+
+  var channel = msgr.Channel(window, window.parent);
+  channel.on('msg-to-iframe', function(data, done){
+      //..
+  });
+
+  channel.send('msg-from-iframe', 'hi!', function(err, result){
+
+  });
 
 
 * support multiple instances (aka 1 iframe, removed then another iframe)
@@ -10,8 +33,8 @@ asynchronous 2 way messaging between a parent page and an iframe that uses `post
 ## Develop
 
     npm install
-    grunt watch 
-     
+    grunt watch
+
 ## Run
 
     python -m SimpleHTTPServer
@@ -32,7 +55,7 @@ And the same tests running on sauce labs:
 
     grunt webdriver:sauceLabs #will run the ie8 tests on saucelabs
 
-You'll need the following env vars set: 
+You'll need the following env vars set:
 * SAUCE_USERNAME
 * SAUCE_PASSWORD
 * MSGR_BASE_URL
@@ -55,7 +78,7 @@ The dispatcher is used when you want to initiate a request and add a callback fo
       console.log('the time is', result);
     });
 
-    //Then in the iframe you add: 
+    //Then in the iframe you add:
 
     var receiver = new msgr.Receiver(window, window.parent);
 
