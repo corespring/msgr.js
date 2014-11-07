@@ -2,7 +2,7 @@
 
 An asynchronous 2 way messaging api for communication between web documents built with `postMessage`.
 
-- root.html
+root.html
 
     var channel = msgr.Channel(window, iframe);
     channel.on('msg-from-iframe', function(data, done){
@@ -14,7 +14,7 @@ An asynchronous 2 way messaging api for communication between web documents buil
     });
 
 
-- child.html
+child.html
 
   var channel = msgr.Channel(window, window.parent);
   channel.on('msg-to-iframe', function(data, done){
