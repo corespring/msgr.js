@@ -2,6 +2,13 @@
 
 An asynchronous 2 way messaging api for communication between web documents built with `postMessage`.
 
+## Browsers
+* ie8+
+* Firefox
+* Chrome
+* Safari
+
+
 root.html
 ```javascript
     var channel = msgr.Channel(window, iframe);
