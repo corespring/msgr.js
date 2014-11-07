@@ -3,7 +3,7 @@
 An asynchronous 2 way messaging api for communication between web documents built with `postMessage`.
 
 root.html
-
+```javascript
     var channel = msgr.Channel(window, iframe);
     channel.on('msg-from-iframe', function(data, done){
         //.. do stuff
@@ -12,10 +12,10 @@ root.html
     channel.send('msg-to-iframe', {name: 'Ed'}, function(err, result){
         //.. do stuff
     });
-
+```
 
 child.html
-
+```javascript
    var channel = msgr.Channel(window, window.parent);
    channel.on('msg-to-iframe', function(data, done){
       //..
@@ -24,6 +24,7 @@ child.html
    channel.send('msg-from-iframe', 'hi!', function(err, result){
 
    });
+```
 
 
 * support multiple instances (aka 1 iframe, removed then another iframe)
