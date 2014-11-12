@@ -96,4 +96,35 @@ describe('receiver', function(){
     );
   });
 
+  it('allows multiple handlers for the same event', function(){
+    var source = new MockWindow('source');
+
+    var resultFromReceiver = null;
+
+    var target = new MockWindow('target', function(msg){
+      resultFromReceiver = JSON.parse(msg);
+    });
+    var d = new msgr.Receiver(source, target);
+
+    var output = [];
+    var messageHandler = function(index, data, done){
+      output.push({ index: index, data: data});
+      done();
+    };
+
+    d.on('message', messageHandler.bind(null, 'one') );
+    d.on('message', messageHandler.bind(null, 'two') );
+
+    var request = {
+      messageType: 'message',
+      mode: 'request',
+      uid: 1
+    };
+    source.postMessage(JSON.stringify(request));
+    expect(output.length).toBe(2);
+    expect(output[0].index).toBe('one');
+    expect(output[1].index).toBe('two');
+
+  });
+
 });

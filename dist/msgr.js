@@ -313,8 +313,10 @@
           handlers.allMessageTypes(data.messageType, data.data, handleDone);
         } else {
           if (handlers[data.messageType]) {
-            logger.log('call the handler for', data.messageType);
-            handlers[data.messageType](data.data, handleDone);
+            for(var i = 0; i < handlers[data.messageType].length; i++){
+              logger.log('call the handler for', data.messageType);
+              handlers[data.messageType][i](data.data, handleDone);
+            }
           }
         }
       }
@@ -322,7 +324,7 @@
     };
     logger.log('add [handlePostMessage] to ', source.location.pathname);
 
-    messageListener.add(handlePostMessage);
+    messageListener.add(handlePostMessage.bind(this));
 
     /**
     * listen for a message of the given type
@@ -338,12 +340,14 @@
       if(messageType === '*'){
         handlers.allMessageTypes = callback;
       } else {
-        logger.log('.on - add handler for', messageType);
-        if (handlers[messageType]) {
-          handlers[messageType] = null;
-        }
-        handlers[messageType] = callback;
+        handlers[messageType] = handlers[messageType] || [];
+        handlers[messageType].push(callback);
+        logger.log('.on - add handler for', messageType, 'no of handlers:', handlers[messageType].length);
       }
+    };
+
+    this.remove = function(){
+      messageListener.remove();
     };
   }
 
@@ -361,6 +365,7 @@
 
     this.remove = function(){
       dispatcher.remove();
+      receiver.remove();
     };
   }
 
