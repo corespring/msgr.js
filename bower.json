@@ -1,7 +1,7 @@
 {
   "description": "A pleasant asynch api for 2 way communication between web documents build with postMessage utility",
   "name": "msgr.js",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "devDependencies": {
     "console-polyfill": "~0.1.2"
   }
