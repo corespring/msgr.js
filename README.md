@@ -79,27 +79,8 @@ You'll also need to deploy the files somewhere sauce labs can access them, at th
 ## Usage
 
 
-There are 2 classes that you can use: `msgr.Dispatcher` and `msgr.Receiver`.
+There is 1 main class `msgr.Channel` which is a combination of: `msgr.Dispatcher` and `msgr.Receiver`.
 
-When used together across 2 documents (a root and an iframe), they simplify making requests from one to the other.
+`msgr.Channel` allows access to `Receiver.on(...)` and `Dispacher.send(...)`.
 
-The dispatcher is used when you want to initiate a request and add a callback for it's response. It saves you from having to manage the postMessage response handling.
-
-    var dispatcher = new msgr.Dispatcher(window, iframe);
-
-    dispatcher.send('whatTimeIsIt', function(err, result){
-      console.log('the time is', result);
-    });
-
-    //Then in the iframe you add:
-
-    var receiver = new msgr.Receiver(window, window.parent);
-
-    receiver.on('whatTimeIsIt', function(done){
-      done(null, new Date().toString());
-    });
-
-### TODO
-
-* callback is optional
-* can pass in data
+There is also a `remove()` method that you should call once you are done, this will remove all the event listeners.
