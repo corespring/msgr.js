@@ -50,6 +50,11 @@ child.html
     http://localhost:8000/test/samples/two/root.html
     http://localhost:8000/test/samples/add-remove-add/root.html
 
+## Release
+
+    grunt bump
+
+
 ## Tests
 We have some unit tests
 
