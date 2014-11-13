@@ -76,6 +76,22 @@ module.exports = function(grunt) {
           ]
         }
       }
+    },
+    bump: {
+      options: {
+        files: ['bower.json', 'package.json'],
+        updateConfigs: [],
+        commit: true,
+        commitMessage: 'Release v%VERSION%',
+        commitFiles: ['package.json', 'bower.json'],
+        createTag: true,
+        tagName: 'v%VERSION%',
+        tagMessage: 'Version %VERSION%',
+        push: true,
+        pushTo: 'upstream',
+        gitDescribeOptions: '--tags --always --abbrev=1 --dirty=-d',
+        globalReplace: false
+      }
     }
   });
 
@@ -85,6 +101,7 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-contrib-jshint');
   grunt.loadNpmTasks('grunt-contrib-uglify');
   grunt.loadNpmTasks('grunt-contrib-jasmine');
+  grunt.loadNpmTasks('grunt-bump');
 
   grunt.registerTask('start-express', startExpress);
   grunt.registerTask('test', ['jshint', 'jasmine']);
