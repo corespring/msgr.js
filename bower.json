@@ -1,7 +1,7 @@
 {
-  "description": "lightweight asynch messaging between page and iframe using postMessage",
+  "description": "A pleasant asynch api for 2 way communication between web documents build with postMessage utility",
   "name": "msgr.js",
-  "version": "0.1.0",
+  "version": "0.0.1",
   "devDependencies": {
     "console-polyfill": "~0.1.2"
   }
