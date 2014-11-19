@@ -24,6 +24,21 @@
     throw "JSON is undefined, if you are using ie8 be sure to define a doctype eg: <!DOCTYPE html>";
   }
 
+  function parseJson(json, logger) {
+    try {
+      return JSON.parse(json);
+    } catch (e) {
+      if (logger) {
+        logger.warn('error parsing event data');
+      }
+      return {};
+    }
+  }
+
+  function argsToArray(args, startPos) {
+    return Array.prototype.slice.call(args, startPos || 0);
+  }
+
   if (!Function.prototype.bind) {
     Function.prototype.bind = function(oThis) {
       if (typeof this !== 'function') {
@@ -32,11 +47,11 @@
         throw new TypeError('Function.prototype.bind - what is trying to be bound is not callable');
       }
 
-      var aArgs   = Array.prototype.slice.call(arguments, 1),
+      var aArgs   = argsToArray(arguments, 1),
           fToBind = this,
           fNOP    = function() {},
           fBound  = function() {
-            return fToBind.apply(this instanceof fNOP && oThis ? this : oThis, aArgs.concat(Array.prototype.slice.call(arguments)));
+            return fToBind.apply(this instanceof fNOP && oThis ? this : oThis, aArgs.concat(argsToArray(arguments)));
           };
 
       fNOP.prototype = this.prototype;
@@ -55,7 +70,7 @@
           options.logger[level].bind(null, name).apply(null, arguments);
         } else {
           if (window.console && window.console[level] ) {
-            var args = Array.prototype.slice.call(arguments); // Make real array from arguments
+            var args = argsToArray(arguments); // Make real array from arguments
             args.unshift(name);
             var fn = window.console[level];
             if(fn.apply){
@@ -114,10 +129,6 @@
       return new Date().getTime() + '-' + Math.floor(Math.random() * 1000);
     };
 
-    var isOldIe = function(){
-      return window.addEventListener ? false : true;
-    };
-
     validateSourceAndTarget('msgr.Dispatcher', source, target);
 
     var logger = new Logger( getUid() + ' - msgr.Dispatcher', options);
@@ -127,11 +138,8 @@
 
     logger.debug('new instance');
 
-    /**
-     * In ie8 the child page is ready before the main page if declared in the markup.
-     * TODO: test behaviour when frame is programmatically added.
-     */
-    var receiverReady = (!isOldIe() && window.top === target) || false;
+    /** Will be set to true, if receiver-ready is received **/
+    var receiverReady = false;
 
     logger.debug('receiver ready: ', receiverReady);
     logger.debug('source: ', source);
@@ -159,19 +167,20 @@
         return;
       }
 
-      var data;
+      var data = parseJson(event.data, logger);
 
-      try{
-        data = JSON.parse(event.data);
-      } catch (e) {
-        logger.warn('error parsing event data');
-        data = {};
-      }
+      //Note that data.mode is used, so we don't need a listener
+      if(data.mode === 'receiver-ready'){
+        if(receiverReady){
+          logger.debug('receiver ready already');
+        } else {
+          logger.debug('receiver is ready - flush the queue...');
+          receiverReady = true;
 
-      if(data.mode == 'receiver-ready'){
-        logger.debug('receiver is ready - flush the queue...');
-        receiverReady = true;
-        flushPendingMessages.bind(this)();
+          //Note that data.mode is used, so we don't need a listener
+          target.postMessage(JSON.stringify({mode:'sender-ready'}), '*');
+          flushPendingMessages.bind(this)();
+        }
       }
 
       if (callbacks[data.uid]) {
@@ -197,7 +206,7 @@
      */
     this.send = function() {
 
-      var args = Array.prototype.slice.call(arguments, 0);
+      var args = argsToArray(arguments, 0);
       var messageType = args[0];
       var data, callback;
       if(typeof(args[1]) === 'function'){
@@ -239,6 +248,10 @@
     this.remove = function(){
       messageListener.remove();
     };
+
+    //when the receiver receives this message
+    //it can stop polling
+    this.send("sender-ready");
   }
 
   function Receiver(source, target, options) {
@@ -258,42 +271,18 @@
       return;
     }
 
-    //We expect that there is a root Dispatcher waiting for this receiver to
-    //be ready - inform it that we are now ready to take messages
-
-    var isOldIe = function(){
-      return window.addEventListener ? false : true;
-    };
-
-    if(isOldIe()){
-      setTimeout(function(){
-        target.postMessage(JSON.stringify({
-          mode: 'receiver-ready'
-        }), '*');
-
-      }, 200);
-    } else {
-      target.postMessage(JSON.stringify({
-        mode: 'receiver-ready'
-      }), '*');
-    }
-
     var handlers = {};
+    var senderReady = false;
 
     var handlePostMessage = function(event) {
 
       logger.log('handlePostMessage: ', JSON.stringify(event.data));
-      var data;
 
-      try{
-        data = JSON.parse(event.data);
-      } catch (e){
-        data = {};
-      }
+      var data = parseJson(event.data, logger);
       logger.log('data:', data);
 
       function handleDone(err, result) {
-        var args = Array.prototype.slice.call(arguments, 0);
+        var args = argsToArray(arguments, 0);
         var out = {
           messageType: data.messageType,
           uid: data.uid,
@@ -304,6 +293,15 @@
         var endpoint = target;
         logger.log('Receiver - return result: ', JSON.stringify(out));
         endpoint.postMessage(JSON.stringify(out), '*');
+      }
+
+      if(data.mode === 'sender-ready'){
+        if(senderReady){
+          logger.debug("sender ready already");
+        } else {
+          logger.debug("sender is ready.");
+          senderReady = true;
+        }
       }
 
       logger.log('data message type: ', data.messageType);
@@ -349,6 +347,27 @@
     this.remove = function(){
       messageListener.remove();
     };
+
+    //We expect that there is a root Dispatcher waiting for this receiver to
+    //be ready - inform it that we are now ready to take messages
+    (function() {
+      function sendReceiverReady() {
+        logger.log("sendReceiverReady", senderReady);
+        if (!senderReady) {
+          logger.log("posting receiver-ready");
+
+          //Note that data.mode is used, so we don't need a listener
+          target.postMessage(JSON.stringify({
+            mode: 'receiver-ready'
+          }), '*');
+
+          //start timeout in case the sender is not ready yet
+          setTimeout(sendReceiverReady, 300);
+        }
+      }
+
+      sendReceiverReady();
+    })();
   }
 
   function Channel(source,target, options){
@@ -356,11 +375,11 @@
     var receiver = new Receiver(source, target, options);
 
     this.send = function(){
-      dispatcher.send.apply(dispatcher, Array.prototype.slice.call(arguments,0));
+      dispatcher.send.apply(dispatcher, argsToArray(arguments,0));
     };
 
     this.on = function(){
-      receiver.on.apply(receiver, Array.prototype.slice.call(arguments,0));
+      receiver.on.apply(receiver, argsToArray(arguments,0));
     };
 
     this.remove = function(){
