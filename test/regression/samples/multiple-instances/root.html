@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+
+  <body>
+    <h1>one-root</h1>
+    <!-- use jquery so we can test ie8 -->
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+    <script type="text/javascript" src="/bower_components/console-polyfill/index.js"></script>
+    <script type="text/javascript" src="/dist/msgr.js"></script>
+    <script type="text/javascript">
+    $(document).ready(function(){
+
+      function CustomLogger(){
+        var handleLog = function(){
+          var args = Array.prototype.slice.call(arguments);
+          $("#log-output").append(args.join(' ') + '<br/>');
+        };
+        this.log = handleLog;
+        this.warn = handleLog;
+        this.debug = handleLog;
+        this.error = handleLog;
+      }
+
+      var channelOne, channelTwo;
+
+      var otherDomain = 'http://eds-mb-pro:8000/test/regression/samples/multiple-instances/';
+      $("#add-1").click(function(){
+
+
+        $('body').append('<iframe id="iframe-1" src="' + otherDomain + 'child-one.html"></iframe>');
+        var iframe = $('#iframe-1')[0];
+        channelOne = new msgr.Channel(window, iframe.contentWindow, {logger: new CustomLogger() });
+        channelOne.send('name', {}, function(err, data){
+          console.log('one >>', data);
+          $('.output').append('channelOne - name: ' + data + '<br/>');
+        });
+
+        channelOne.on('hi-from-child-one', function(){
+          $('.output').append('channelOne - hi-from-child-one<br/>');
+        });
+        channelOne.on('hi-from-child-two', function(){
+          $('.output').append('channelOne - hi-from-child-two');
+        });
+      });
+
+      $('#add-2').click(function(){
+        $('body').append('<iframe id="iframe-2" src="'+ otherDomain +'child-two.html"></iframe>');
+        var iframe = $('#iframe-2')[0];
+        var channelTwo = new msgr.Channel(window, iframe.contentWindow, {logger : new CustomLogger()});
+        channelTwo.send('name', {}, function(err, data){
+          console.log('two >>', data);
+          $('.output').append('channelTwo - name: ' + data + '<br/>');
+        });
+        channelTwo.on('hi-from-child-two', function(){
+          console.log('ok - got hi-from-child-two');
+          $('.output').append('channelTwo - hi-from-child-two');
+        });
+        channelTwo.on('hi-from-child-one', function(){
+          console.warn('bad channel one - got hi-from-child-one');
+          $('.output').append('channelTwo - hi-from-child-one');
+        });
+      });
+    });
+    </script>
+
+    <h1>Add, remove then add again</h1>
+    <p>This demonstrates that the message handler is removed as long as `remove` is called</p>
+    <button id="add-1">Add 1</button>
+    <button id="add-2">Add 2</button>
+    <div class="output"></div>
+    <h5>Log output</h5>
+    <div id="log-output"></div>
+    <hr/>
+  </body>
+</html>

@@ -275,6 +275,13 @@
       logger.log('handlePostMessage: ', JSON.stringify(event.data));
 
       var data = parseJson(event.data, logger);
+
+
+      if(event.source !== target){
+        logger.warn('not the source - ignore');
+        return;
+      }
+      
       logger.log('data:', data);
 
       function handleDone(err, result) {
