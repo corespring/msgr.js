@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+  <body>
+    <h1>child-two</h1>
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+    <script type="text/javascript" src="/bower_components/console-polyfill/index.js"></script>
+    <script type="text/javascript" src="/dist/msgr.js"></script>
+    <script type="text/javascript">
+
+
+        var count = 0;
+
+        $(document).ready(function(){
+          var channel = new msgr.Channel(window, window.parent, {disableLogging: true});
+
+          channel.on('name', function(data, done){
+            console.log('child-two:', data);
+            var orig = count;
+            count++;
+            done(null, 'child-' + orig);
+          });
+
+          channel.send('hi-from-child-two');
+        });
+    </script>
+  </body>
+</html>

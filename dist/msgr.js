@@ -1,5 +1,17 @@
 (function(root) {
 
+  function getUid() {
+    var d = new Date().getTime();
+
+    var gen = function(c){
+      var r = (d + Math.random()*16)%16 | 0;
+      d = Math.floor(d/16);
+      return (c=='x' ? r : (r&0x3|0x8)).toString(16);
+    };
+    var uuid = 'xxxxxxxxxxxx'.replace(/[xy]/g, gen);
+    return uuid;
+  }
+
   function validateSourceAndTarget(name, source,target){
     if(!source.postMessage) {
       throw name + ' - source doesn\'t have postMessage';
@@ -124,10 +136,7 @@
     };
   }
 
-  function Dispatcher(source, target, options) {
-    var getUid = function() {
-      return new Date().getTime() + '-' + Math.floor(Math.random() * 1000);
-    };
+  function Dispatcher(source, target, options, sourceUid, targetUid) {
 
     validateSourceAndTarget('msgr.Dispatcher', source, target);
 
@@ -154,6 +163,7 @@
     };
 
     var callbacks = {};
+    var receiverUids = null;
 
     /**
     Handle all messages to the source window
@@ -176,19 +186,28 @@
         } else {
           logger.debug('receiver is ready - flush the queue...');
           receiverReady = true;
+          receiverUids = data.receiver;
 
           //Note that data.mode is used, so we don't need a listener
           target.postMessage(JSON.stringify({mode:'dispatcher-ready'}), '*');
           flushPendingMessages.bind(this)();
         }
+      } else if(data.mode === 'dispatcher-ready') {
+        console.log('dispatcher-ready');
+      } else {
+        if(data && receiverUids && (data.source !== receiverUids.source || data.target !== receiverUids.target)){
+          console.log('-----> skip!!', data, receiverUids);
+          return;
+        }
+
+        if (callbacks[data.uid]) {
+          callbacks[data.uid](data.err, data.result);
+          callbacks[data.uid] = null;
+        } else {
+          logger.warn('no callback set for: ', data.uid);
+        }
       }
 
-      if (callbacks[data.uid]) {
-        callbacks[data.uid](data.err, data.result);
-        callbacks[data.uid] = null;
-      } else {
-        logger.warn('no callback set for: ', data.uid);
-      }
     };
 
     messageListener.add(handlePostMessage.bind(this));
@@ -228,7 +247,9 @@
         var msg = {
           messageType: messageType,
           mode: 'request',
-          uid: messageUid
+          uid: messageUid,
+          source: sourceUid,
+          target: targetUid
         };
 
         if(data){
@@ -250,9 +271,9 @@
     };
   }
 
-  function Receiver(source, target, options) {
+  function Receiver(source, target, options, sourceUid, targetUid) {
 
-    var logger = new Logger('msgr.Receiver', options);
+    var logger = new Logger('msgr.Receiver [src: ' + sourceUid + ', tar: ' +targetUid + ']', options);
     var messageListener = new MessageListener(source);
 
     validateSourceAndTarget('msgr.Receiver', source, target);
@@ -301,12 +322,19 @@
       }
 
       logger.log('data message type: ', data.messageType);
+
+      console.log('----->', sourceUid, targetUid, data);
+      //if (data.source !== sourceUid || data.target !== targetUid) {
+      //  logger.log('the source uid or target uid don\'t match - skip ', data.source, data.target);
+      //  return;
+      //}
+
       if(data.messageType) {
         if(handlers.allMessageTypes && !handlers[data.messageType]){
           logger.log('using the * handler for', data.messageType);
           handlers.allMessageTypes(data.messageType, data.data, handleDone);
         } else {
-          if (handlers[data.messageType]) {
+          if (handlers[data.messageType] && data.source === sourceUid && data.target === targetUid) {
             for(var i = 0; i < handlers[data.messageType].length; i++){
               logger.log('call the handler for', data.messageType);
               handlers[data.messageType][i](data.data, handleDone);
@@ -354,7 +382,11 @@
 
           //Note that data.mode is used, so we don't need a listener
           target.postMessage(JSON.stringify({
-            mode: 'receiver-ready'
+            mode: 'receiver-ready',
+            receiver: {
+              source: sourceUid,
+              target: targetUid
+            }
           }), '*');
 
           //start timeout in case the dispatcher is not ready yet
@@ -367,8 +399,11 @@
   }
 
   function Channel(source,target, options){
-    var dispatcher = new Dispatcher(source, target, options);
-    var receiver = new Receiver(source, target, options);
+
+    var sourceUid = 'source-' + getUid(); 
+    var targetUid = 'target-' + getUid();
+    var dispatcher = new Dispatcher(source, target, options, sourceUid, targetUid);
+    var receiver = new Receiver(source, target, options, sourceUid, targetUid);
 
     this.send = function(){
       dispatcher.send.apply(dispatcher, argsToArray(arguments,0));
