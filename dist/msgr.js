@@ -1,5 +1,18 @@
 (function(root) {
 
+  function getUid() {
+    var d = new Date().getTime();
+
+    var gen = function(c){
+      var r = (d + Math.random()*16)%16 | 0;
+      d = Math.floor(d/16);
+      return (c=='x' ? r : (r&0x3|0x8)).toString(16);
+    };
+    var uuid = 'xxxxxxxxxxxx'.replace(/[xy]/g, gen);
+    return uuid;
+  }
+
+
   function validateSourceAndTarget(name, source,target){
     if(!source.postMessage) {
       throw name + ' - source doesn\'t have postMessage';
@@ -125,9 +138,6 @@
   }
 
   function Dispatcher(source, target, options) {
-    var getUid = function() {
-      return new Date().getTime() + '-' + Math.floor(Math.random() * 1000);
-    };
 
     validateSourceAndTarget('msgr.Dispatcher', source, target);
 
@@ -281,7 +291,7 @@
         logger.warn('not the source - ignore');
         return;
       }
-      
+
       logger.log('data:', data);
 
       function handleDone(err, result) {
@@ -395,5 +405,8 @@
   root.msgr.Receiver = Receiver;
   root.msgr.Dispatcher = Dispatcher;
   root.msgr.Channel = Channel;
+  root.utils = {
+    getUid: getUid
+  };
 
 })(this);
