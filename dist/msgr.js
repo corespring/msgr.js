@@ -215,7 +215,6 @@
      * as the 2nd argument.
      */
     this.send = function() {
-
       var args = argsToArray(arguments, 0);
       var messageType = args[0];
       var data, callback;
@@ -284,14 +283,12 @@
 
       logger.log('handlePostMessage: ', JSON.stringify(event.data));
 
-      var data = parseJson(event.data, logger);
-
-
       if(event.source !== target){
         logger.warn('not the source - ignore');
         return;
       }
 
+      var data = parseJson(event.data, logger);
       logger.log('data:', data);
 
       function handleDone(err, result) {
@@ -332,8 +329,8 @@
       }
 
     };
-    logger.log('add [handlePostMessage] to ', source.location.pathname);
 
+    logger.log('add [handlePostMessage] to ', source.location.pathname);
     messageListener.add(handlePostMessage.bind(this));
 
     /**
@@ -400,15 +397,13 @@
     };
   }
 
-  if(!root.msgr) {
-    root.msgr = {};
-    root.msgr.Receiver = Receiver;
-    root.msgr.Dispatcher = Dispatcher;
-    root.msgr.Channel = Channel;
-    root.msgr.MessageListener = MessageListener;
-    root.msgr.utils = {
-      getUid: getUid
-    };
-  }
+  root.msgr = root.msgr || {};
+  root.msgr.Receiver = Receiver;
+  root.msgr.Dispatcher = Dispatcher;
+  root.msgr.Channel = Channel;
+  root.msgr.MessageListener = MessageListener;
+  root.msgr.utils = {
+    getUid: getUid
+  };
 
 })(this);

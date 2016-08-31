@@ -11,6 +11,9 @@ module.exports = function(grunt) {
   grunt.initConfig({
     pkg: grunt.file.readJSON('package.json'),
     jshint: {
+      options: {
+        reporterOutput: ""
+      },
       all: ['Gruntfile.js', 'lib/**/*.js', 'test/**/*.js']
     },
     uglify: {
